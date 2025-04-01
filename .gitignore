@@ -1,0 +1,15 @@
+/backend/.env
+/backend/dist
+/backend/node_modules
+/backend/package-lock.json
+
+
+/frontend/.env.local
+/frontend/build
+/frontend/node_modules
+/frontend/package-lock.json
+
+
+
+/shared/node_modules
+/shared/package-lock.json
