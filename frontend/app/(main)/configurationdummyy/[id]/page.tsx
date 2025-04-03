@@ -1,21 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
-import React from 'react'
-import './Config.css'
+'use client'
+import React, { useEffect, useRef, useState } from 'react'
+import { BACKEND_BASE_URL } from '@/constant/URL'
 import axios from 'axios'
+import { voiceData } from '../../../../assets/data/playhtdata'
 import { io } from 'socket.io-client'
-import Chatbot from '../app/(main)/configurationDummy/[id]/_components/Chatbot'
-import { FaPhone, FaRegCopy } from 'react-icons/fa'
-import Select from 'react-select'
-import ReactTagInput from '@pathofdev/react-tag-input'
-import '@pathofdev/react-tag-input/build/index.css'
-import { voiceData } from '../assets/data/playhtdata'
-import { BACKEND_BASE_URL, TWILLO_SERVER_URL } from '../constant/URL'
-import FunctionConfiguration from '../app/(main)/configurationDummy/[id]/_components/FunctionConfigration'
-import TwilloConfiguration from '../app/(main)/configurationDummy/[id]/_components/TwilloConfigration'
-import CallDialoag from '../components/CallDialoag'
 import { useParams } from 'next/navigation'
+import CallDialoag from './_components/CallDialoag'
+import TwilloConfiguration from './_components/TwilloConfigration'
+import FunctionConfiguration from './_components/FunctionConfigration'
+import Chatbot from './_components/Chatbot'
+import Select from 'react-select'
+import { FaPhone } from 'react-icons/fa'
+import { useSidebarStore } from '@/store/sidebarStore'
 
-const ConfigurationDummy = ({ open, isdummyfunc }) => {
+const ConfigurationDummy = () => {
   const [apikey, setApiKey] = useState('')
   const [isCalling, setIsCalling] = useState(false)
   const [text, setText] = useState('')
@@ -35,17 +33,19 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
   const [placeholders, setPlaceholders] = useState([{ key: ' ', value: '' }])
 
+  const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen)
+
   const addPlaceholder = () => {
     setPlaceholders([...placeholders, { key: '', value: '' }])
   }
 
-  const updatePlaceholder = (index, field, value) => {
+  const updatePlaceholder = (index: any, field: any, value: any) => {
     const updatedPlaceholders = [...placeholders]
     updatedPlaceholders[index][field] = value
     setPlaceholders(updatedPlaceholders)
   }
 
-  const removePlaceholder = (index) => {
+  const removePlaceholder = (index: any) => {
     setPlaceholders(placeholders.filter((_, i) => i !== index))
   }
 
@@ -211,7 +211,6 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       }
     }
   }
-  console.log(open)
   const idx = useParams()
   const [id, setId] = useState('')
   const [name, setName] = useState('')
@@ -275,12 +274,12 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     value: voice.id,
     label: voice.name,
   }))
-  const handleTagChange = (newTags) => {
+  const handleTagChange = (newTags: any) => {
     setFillers(newTags)
   }
   const [loading, setLoading] = useState(false)
 
-  const handlePublish = async (value) => {
+  const handlePublish = async (value: any) => {
     setIsPublish(value)
     try {
       const token = localStorage.getItem('Token')
@@ -302,7 +301,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         },
       })
       console.log('Assistant updated successfully:', response.data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating/updating assistant:', error.message)
     }
   }
@@ -374,9 +373,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsVisible(!isVisible)
   }
 
-  function getconfigdata(data) {
+  function getconfigdata(data: any) {
     console.log([data])
-    let a = [data][0].filter((e) => e._id === configid)
+    let a = [data][0].filter((e: any) => e._id === configid)
     if (a.length > 0) {
       // console.log(a[0])
       // setFirstFillers(a[0].firstFiller);
@@ -461,35 +460,32 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
     fetchConfigs()
   }, [configid]) // Dependency on configid to refetch configs when it changes
-  // Example of including a token dependency
-  useEffect(() => {
-    isdummyfunc(location.pathname.slice(0, 20))
-  }, [])
+
   return (
     <>
       <div
         className={`${
-          open
-            ? 'lg:w-[65%] lg:left-[30%]    left-[10rem] w-[68%] sm:left-[15rem] md:w-[70%] sm:w-[62%] xl:w-[75%] xl:left-[23%] xm:w-[68%]'
-            : 'lg:w-[93%] lg:left-[8%]  w-[70%] left-[25%]'
-        } fixed  lg:top-[4.6rem] xl:top-[5rem]  h-[85]  rounded-3xl text-white   w-64 top-[6.9rem] sm:top-[4.9rem] `}
+          isSidebarOpen
+            ? 'lg:w-[85%] lg:left-[13%] w-[70%] left-[25%] mt-6'
+            : 'lg:w-[96%] lg:left-[3%] w-[70%] left-[25%]'
+        } fixed  lg:top-[4.6rem] xl:top-[5rem] h-[85] rounded-3xl text-white w-64 top-[6.9rem] sm:top-[4.9rem] `}
       >
         <div
           className={`p-4 md:-ml-7  rounded-xl  left-24  bg-black ${
             activeContent === 'content3' ? 'h-[120vh]' : 'h-[100vh]'
-          } text-white xl:h-[]  overflow-y-scroll   scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-gray-500 h-[90vh] absolute w-[] -right-4 md:right-0 left-3  top-0`}
+          } text-white xl:h-[90vh] overflow-y-scroll h-[90vh] absolute w-[] -right-4 md:right-0 left-3  top-0`}
         >
           <div className='flex  flex- ml-4 justify-between items-center mb-4'>
             <h1 className='text-2xl'>{name}</h1>
             <div className='flex flex- items-center space-x-2'>
               {/* <div className="bg-[#25263F] text-sm px-5 py-3 rounded-full flex  items-center space-x-1">
-                <span>{id}</span>
-                <FaRegCopy
-                  onClick={handleCopy}
-                  className={`cursor-pointer ${isCopied ? "text-green-500" : "text-white"
-                    }`}
-                />
-              </div> */}
+                    <span>{id}</span>
+                    <FaRegCopy
+                      onClick={handleCopy}
+                      className={`cursor-pointer ${isCopied ? "text-green-500" : "text-white"
+                        }`}
+                    />
+                  </div> */}
               <div className='flex flex- items-center space-x-4'>
                 <div>
                   {show ? <Chatbot data={apikey} /> : ''}
@@ -522,7 +518,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   </div>
                 </div>
 
-                <div to={'/chatbots'}>
+                <div>
                   {show ? <Chatbot data={apikey} /> : ''}
                   <button
                     onClick={toggleChat}
@@ -574,11 +570,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                 )}
 
                 {/* <button
-              className="bg-zinc-600 hover:bg-zinc-700 p-2 rounded-full"
-              // onClick={cloneProect}
-            >
-              Clone
-            </button> */}
+                  className="bg-zinc-600 hover:bg-zinc-700 p-2 rounded-full"
+                  // onClick={cloneProect}
+                >
+                  Clone
+                </button> */}
               </div>
             </div>
           </div>
@@ -686,8 +682,8 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
             </div>
             <div className='flex items-center space-x-4'>
               {/* <span className="text-zinc-400">
-                Draft Saved about 4 hours ago
-              </span> */}
+                    Draft Saved about 4 hours ago
+                  </span> */}
               <button
                 className='bg-blue-500 px-4 py-2 rounded-lg'
                 onClick={handlePost}
@@ -705,8 +701,8 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
               )}
 
               {/* <select className="bg-zinc-800 px-4 py-2 rounded-lg flex items-center">
-                <option value="Web">Web</option>
-              </select> */}
+                    <option value="Web">Web</option>
+                  </select> */}
             </div>
           </div>
           <div className='flex  md:flex-col w-40 space-y-2 p-4 bg-z text-white'>
@@ -743,9 +739,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   rx='8'
                   fill='none'
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='16'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='16'
                 />
                 <line
                   x1='56'
@@ -754,9 +750,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   y2='136'
                   fill='none'
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='16'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='16'
                 />
                 <line
                   x1='104'
@@ -765,9 +761,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   y2='136'
                   fill='none'
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='16'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='16'
                 />
                 <line
                   x1='56'
@@ -776,9 +772,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   y2='168'
                   fill='none'
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='16'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='16'
                 />
                 <line
                   x1='200'
@@ -787,9 +783,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   y2='168'
                   fill='none'
                   stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='16'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='16'
                 />
               </svg>
               Transcriber
@@ -862,9 +858,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                 style={{ backgroundColor: '#25263F' }}
               >
                 {/* <h2 className="text-sm font-normal mb-2 ">
-                Please use <span className="text-red-400">{TWILLO_SERVER_URL}/incoming-call</span> for incoming calls.
-
-                </h2> */}
+                    Please use <span className="text-red-400">{TWILLO_SERVER_URL}/incoming-call</span> for incoming calls.
+    
+                    </h2> */}
                 <h2 className='text-2xl font-normal mb-2 '>
                   Model{' '}
                   <span className='text-zinc-400 text-sm pl-3 mb-6'>
@@ -884,16 +880,16 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   />
                 </div>
                 {/* <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    interruption keywords
-                  </label>
-                  <ReactTagInput
-                    tags={fillers}
-                    placeholder="Add interruption keywords"
-                    onChange={handleTagChange}
-                    style={{ backgroundColor: "red" }}
-                  />
-                </div> */}
+                      <label className="block text-sm font-medium mb-1">
+                        interruption keywords
+                      </label>
+                      <ReactTagInput
+                        tags={fillers}
+                        placeholder="Add interruption keywords"
+                        onChange={handleTagChange}
+                        style={{ backgroundColor: "red" }}
+                      />
+                    </div> */}
                 <div>
                   <label className='block text-sm font-medium mb-1'>
                     System Prompt
@@ -910,29 +906,29 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                 style={{ backgroundColor: '#25263F' }}
               >
                 {/* <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Provider
-                  </label>
-                  <select className="w-full p-2 bg-[#1F1B29] rounded text-white">
-                    <option>openai</option>
-                    <option>together-ai</option>
-                  </select>
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Model
-                  </label>
-                  <select
-                    value={selectedModel}
-                    onChange={handleChange}
-                    className="w-full p-2 bg-[#1F1B29] rounded text-white"
-                  >
-                    <option>Anthropic</option>
-                    <option>GPT 3.5</option>
-                    <option>GPT 4.0</option>
-                    <option>Claude</option>
-                  </select>
-                </div> */}
+                      <label className="block text-sm font-medium mb-1">
+                        Provider
+                      </label>
+                      <select className="w-full p-2 bg-[#1F1B29] rounded text-white">
+                        <option>openai</option>
+                        <option>together-ai</option>
+                      </select>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Model
+                      </label>
+                      <select
+                        value={selectedModel}
+                        onChange={handleChange}
+                        className="w-full p-2 bg-[#1F1B29] rounded text-white"
+                      >
+                        <option>Anthropic</option>
+                        <option>GPT 3.5</option>
+                        <option>GPT 4.0</option>
+                        <option>Claude</option>
+                      </select>
+                    </div> */}
 
                 <div className='mb-4'>
                   <label className='block text-sm font-medium mb-1'>
@@ -944,45 +940,45 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                 </div>
 
                 {/* <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Temperature
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    className="w-full h-2 bg-[#1F1B29] rounded appearance-none bg-transparent [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Max Tokens
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full p-2 bg-[#1F1B29] rounded text-white"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Detect Speech Emotion
-                  </label>
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 text-green-500 bg-zinc-800 rounded border-zinc-600"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Data Prompt
-                  </label>
-                  <textarea
-                    className="p-3 h-32 w-full bg-zinc-900 rounded resize-none text-white"
-                    onChange={(e) => setDataPrompt(e.target.value)}
-                    value={dataPrompt}
-                    placeholder="Example: You are english teacher and your job is to communicate other in English and point out their mistakes."
-                  />
-                </div> */}
+                      <label className="block text-sm font-medium mb-1">
+                        Temperature
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        className="w-full h-2 bg-[#1F1B29] rounded appearance-none bg-transparent [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Max Tokens
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full p-2 bg-[#1F1B29] rounded text-white"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Detect Speech Emotion
+                      </label>
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 text-green-500 bg-zinc-800 rounded border-zinc-600"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Data Prompt
+                      </label>
+                      <textarea
+                        className="p-3 h-32 w-full bg-zinc-900 rounded resize-none text-white"
+                        onChange={(e) => setDataPrompt(e.target.value)}
+                        value={dataPrompt}
+                        placeholder="Example: You are english teacher and your job is to communicate other in English and point out their mistakes."
+                      />
+                    </div> */}
 
                 <div className='mb-4'>
                   <label className='block text-sm font-medium mb-1'>
@@ -1119,7 +1115,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   {showDropdown ? (
                     <Select
                       options={options}
-                      onChange={(selectedOption) =>
+                      onChange={(selectedOption: any) =>
                         setVoiceID(selectedOption.value)
                       }
                       className='w-full py-1 bg-[#1F1B29] rounded'
