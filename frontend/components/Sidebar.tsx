@@ -68,12 +68,12 @@ const Sidebar: React.FC = () => {
     '/login',
     '/register',
     '/demo',
-    '/assistants',
     '/assistantlist',
     '/configured',
     '/chatbots',
     '/voicebots',
     '/blankpopup',
+    '/createassistant',
   ]
 
   const hideSidebarRegex = /^\/(assistant)\/.+$/
@@ -116,19 +116,19 @@ const Sidebar: React.FC = () => {
             pathname === '/createassistant' && 'absolute'
           } fixed left-0 flex flex-col rounded w-full cursor-pointer`}
         >
-          <div className='w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5'>
+          <div className='w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-2'>
             <img src='/TalkBetter.png' className='h-10 w-64' alt='TalkBetter' />
-            <div className='flex gap-5 items-center pr-5 relative'>
+            <div className='flex gap-2 items-center pr-5 relative w-[25%]'>
               {userDetails?.role == 'seller' && (
                 <button
-                  className='rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full'
+                  className='rounded-md py-3 px-2 bg-[#5D5FEF] text-white text-xs w-full cursor-pointer'
                   onClick={() => router.push('/createassistant')}
                 >
                   Create Assistant
                 </button>
               )}
 
-              <button className='rounded-md text-xs p-3 bg-[#000000] text-white w-full cursor-pointer'>
+              <button className='rounded-md text-xs py-3 px-2 bg-[#000000] text-white w-full cursor-pointer'>
                 + Add AI for help
               </button>
               <div className='gap-5 flex'>

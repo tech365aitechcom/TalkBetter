@@ -105,11 +105,11 @@ const AssistantsPage = () => {
     <div
       className={`${
         isSidebarOpen
-          ? 'lg:w-[65%]  lg:left-[30%] left-[10rem] w-[60%] sm:left-[15rem] md:w-[70%] sm:w-[62%] xl:w-[79%] xl:left-[20%] xm:w-[68%]'
+          ? 'lg:w-[65%]  lg:left-[30%] left-[10rem] w-[60%] sm:left-[15rem] md:w-[70%] sm:w-[62%] xl:w-[79%] xl:left-[20%] xm:w-[68%] mt-6'
           : 'lg:w-[93%] lg:right-[3%] lg:left-[6%] w-[70%] left-[25%]'
       } absolute   flex-col gap-[24px] lg:top-[4.6rem] xl:top-[5rem] bg-black h-[85vh] rounded-3xl text-white flex justify-start py-4 items-center sm:top-[4.9rem] top-[6.9rem]  overflow-hidden`}
     >
-      <div className=''>
+      <div className='w-full px-8'>
         <Select
           options={options}
           onChange={handleSelectChange}
