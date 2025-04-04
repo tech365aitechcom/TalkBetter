@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "services/audioStreamer.js"
+    "services/audioStreamer.ts",
+    "app/(main)/configurationdummyy/[id]/_components/Chatbot.jsx"
   ],
   "exclude": ["node_modules"]
 }

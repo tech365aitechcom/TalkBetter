@@ -92,13 +92,20 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
       tabIndex={-1}
       style={{ pointerEvents: 'auto' }}
     >
-      <div className='w-1/2 bg-black shadow-lg duration-200 sm:rounded-lg p-10 text-white border'>
-        <div className='flex flex-col gap-2 mb-2'>
-          <p>Create Assistant</p>
-          <p>
-            Let's create Voicebot Assistant! You can start by giving it a unique
-            name
-          </p>
+      <div className='w-1/2 bg-white shadow-lg duration-200 sm:rounded-lg p-10 text-black border'>
+        <div className='flex items-center justify-between mb-4'>
+          <div className='flex flex-col gap-2 mb-2'>
+            <p>Create Assistant</p>
+            <p>
+              Let's create Voicebot Assistant! You can start by giving it a
+              unique name
+            </p>
+          </div>
+          <Link href={'/overview'}>
+            <button className='text-black text-3xl cursor-pointer'>
+              &times;
+            </button>
+          </Link>
         </div>
         <div className='grid grid-cols-1 gap-6'>
           <div className='flex flex-col gap-2'>
@@ -108,7 +115,7 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
               id='name'
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className='p-2 w-full border border-white outline-none rounded-md placeholder:text-white text-white'
+              className='p-2 w-full border border-black outline-none rounded-md placeholder:text-black text-black'
               placeholder='Enter the Name'
             />
             {validationError && (
@@ -127,7 +134,7 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
               id='description'
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className='p-2 w-full border  border-white outline-none rounded-md placeholder:text-white text-white h-[10rem]'
+              className='p-2 w-full border  border-black outline-none rounded-md placeholder:text-black text-black h-[10rem]'
               placeholder='Enter the Description'
             />
             {descValidationError && (
@@ -146,7 +153,7 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
               id='language'
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className='p-2 w-full border border-white outline-none rounded-md text-white'
+              className='p-2 w-full border border-black outline-none rounded-md text-black'
             >
               <option value=''>Select Language</option>
               <option value='english'>English</option>
@@ -164,7 +171,7 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
               step='0.01'
               value={price}
               onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-              className='p-2 w-full border border-white outline-none rounded-md placeholder:text-white text-white'
+              className='p-2 w-full border border-black outline-none rounded-md placeholder:text-black text-black'
             />
             <p className='text-sm'>
               Set the price per minute for using this AI assistant. Users will
@@ -180,7 +187,7 @@ const BlankTemplatePopup: React.FC<BlankTemplatePopupProps> = ({ onClose }) => {
             Cancel
           </Link>
           <button
-            className='bg-[#5D5FEF] text-white px-4 py-2 rounded-lg ml-2 cursor-pointer'
+            className='bg-[#5D5FEF] text-black px-4 py-2 rounded-lg ml-2 cursor-pointer'
             onClick={handleCreate}
           >
             Create

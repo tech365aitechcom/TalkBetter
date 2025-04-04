@@ -118,7 +118,11 @@ const Sidebar: React.FC = () => {
         >
           <div className='w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-2'>
             <img src='/TalkBetter.png' className='h-10 w-64' alt='TalkBetter' />
-            <div className='flex gap-2 items-center pr-5 relative w-[25%]'>
+            <div
+              className={`flex gap-2 items-center pr-5 relative ${
+                userDetails?.role == 'seller' ? 'w-[25%]' : ''
+              }`}
+            >
               {userDetails?.role == 'seller' && (
                 <button
                   className='rounded-md py-3 px-2 bg-[#5D5FEF] text-white text-xs w-full cursor-pointer'

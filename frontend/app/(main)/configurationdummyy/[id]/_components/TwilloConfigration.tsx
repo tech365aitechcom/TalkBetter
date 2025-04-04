@@ -3,34 +3,45 @@ import {
   BACKEND_BASE_URL,
   TWILLO_SERVER_URL,
 } from '../../../../../constant/URL'
-import axios from 'axios'
 import { validatePhoneNumber } from '../../../../../utils/validatePhoneNumber'
 
-function TwilloConfiguration({ twilioNumber, setTwilioNumber, handlePost }) {
+type TwilloConfigurationProps = {
+  twilioNumber: string
+  setTwilioNumber: (number: string) => void
+  handlePost: () => Promise<void>
+}
+
+const TwilloConfiguration: React.FC<TwilloConfigurationProps> = ({
+  twilioNumber,
+  setTwilioNumber,
+  handlePost,
+}) => {
   const [loading, setLoading] = useState(false)
-  const [validErr, setValidateErr] = useState(null)
+  const [validErr, setValidateErr] = useState<string | null>(null)
+
   const handleSubmit = async () => {
     if (!validatePhoneNumber(twilioNumber)) {
       setValidateErr(
-        ' The phone number must include the country code and have 10 digits ex: +11234567890'
+        'The phone number must include the country code and have 10 digits, e.g., +11234567890'
       )
       return
     }
     setValidateErr(null)
-    setLoading(false)
+    setLoading(true)
+
     await handlePost()
 
-    setLoading(true)
+    setLoading(false)
   }
 
   return (
-    <div className='p-6 rounded-xl md:w-auto w-[35rem] md:ml-40 md:-mt-[15.3rem]  bg-[#25263F]'>
+    <div className='p-6 rounded-xl md:w-auto w-[35rem] md:ml-40 md:-mt-[15.3rem] bg-[#25263F]'>
       <h2 className='text-2xl font-semibold text-white mb-4'>
         Twillo Configuration
       </h2>
 
       {twilioNumber && (
-        <h2 className='text-sm font-normal mb-5 '>
+        <h2 className='text-sm font-normal mb-5'>
           <p>
             You must add `
             <span className='text-red-400'>

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { BACKEND_BASE_URL } from '@/constant/URL'
 import axios from 'axios'
 import { voiceData } from '../../../../assets/data/playhtdata'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 import { useParams } from 'next/navigation'
 import CallDialoag from './_components/CallDialoag'
 import TwilloConfiguration from './_components/TwilloConfigration'
@@ -12,40 +12,46 @@ import Chatbot from './_components/Chatbot'
 import Select from 'react-select'
 import { FaPhone } from 'react-icons/fa'
 import { useSidebarStore } from '@/store/sidebarStore'
+import { Placeholder } from '../../../../../shared/types/config'
 
 const ConfigurationDummy = () => {
-  const [apikey, setApiKey] = useState('')
-  const [isCalling, setIsCalling] = useState(false)
-  const [text, setText] = useState('')
-  const [isListening, setIsListening] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [endCall, setEndCall] = useState(true)
-  const [selectedModel, setSelectedModel] = useState('')
+  const [apikey, setApiKey] = useState<string>('')
+  const [isCalling, setIsCalling] = useState<boolean>(false)
+  const [text, setText] = useState<string>('')
+  const [isListening, setIsListening] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isMuted, setIsMuted] = useState<boolean>(false)
+  const [endCall, setEndCall] = useState<boolean>(true)
+  const [selectedModel, setSelectedModel] = useState<string>('')
 
-  const recognitionRef = useRef(null)
-  const socket = useRef(null)
-  const audioContextRef = useRef(null)
-  const audioBufferQueue = useRef([])
-  const isPlayingRef = useRef(false)
-  const sourceNodeRef = useRef(null)
-
-  const [placeholders, setPlaceholders] = useState([{ key: ' ', value: '' }])
-
+  const recognitionRef = useRef<any>(null)
+  const socket = useRef<Socket | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const audioBufferQueue = useRef<AudioBuffer[]>([])
+  const isPlayingRef = useRef<boolean>(false)
+  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null)
   const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen)
+
+  const [placeholders, setPlaceholders] = useState<Placeholder[]>([
+    { key: ' ', value: '' },
+  ])
 
   const addPlaceholder = () => {
     setPlaceholders([...placeholders, { key: '', value: '' }])
   }
 
-  const updatePlaceholder = (index: any, field: any, value: any) => {
+  const updatePlaceholder = (
+    index: number,
+    field: keyof Placeholder,
+    value: string
+  ) => {
     const updatedPlaceholders = [...placeholders]
     updatedPlaceholders[index][field] = value
     setPlaceholders(updatedPlaceholders)
   }
 
-  const removePlaceholder = (index: any) => {
+  const removePlaceholder = (index: number) => {
     setPlaceholders(placeholders.filter((_, i) => i !== index))
   }
 
@@ -62,13 +68,13 @@ const ConfigurationDummy = () => {
       setIsConnected(false)
     })
 
-    socket.current.on('audio-chunk', async (chunk) => {
+    socket.current.on('audio-chunk', async (chunk: ArrayBuffer) => {
       try {
+        const AudioContextClass =
+          window.AudioContext || (window as any).webkitAudioContext
         if (!audioContextRef.current) {
-          audioContextRef.current = new (window.AudioContext ||
-            window.webkitAudioContext)()
+          audioContextRef.current = new AudioContextClass()
         }
-
         const audioData = new Uint8Array(chunk).buffer
 
         audioContextRef.current
@@ -88,17 +94,15 @@ const ConfigurationDummy = () => {
     })
 
     return () => {
-      socket.current.disconnect()
-      if (audioContextRef.current) {
-        audioContextRef.current.close()
-      }
+      socket.current?.disconnect()
+      audioContextRef.current?.close()
     }
   }, [apikey])
 
-  const playAudioQueue = async () => {
-    if (audioBufferQueue.current.length > 0) {
+  const playAudioQueue = () => {
+    if (audioBufferQueue.current.length > 0 && audioContextRef.current) {
       isPlayingRef.current = true
-      const audioBuffer = audioBufferQueue.current.shift()
+      const audioBuffer = audioBufferQueue.current.shift() as AudioBuffer
       const sourceNode = audioContextRef.current.createBufferSource()
       sourceNode.buffer = audioBuffer
       sourceNode.connect(audioContextRef.current.destination)
@@ -157,7 +161,9 @@ const ConfigurationDummy = () => {
       stopPlaybackAndClearQueue()
     }
 
-    const recognition = new window.webkitSpeechRecognition()
+    const SpeechRecognition = (window as any).webkitSpeechRecognition
+    const recognition = new SpeechRecognition()
+
     recognitionRef.current = recognition
     recognition.continuous = true
     recognition.interimResults = true
@@ -167,7 +173,7 @@ const ConfigurationDummy = () => {
       console.log('Speech recognition started')
     }
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error', event)
       alert(`Speech recognition error: ${event.error}`)
       setIsListening(false)
@@ -176,14 +182,14 @@ const ConfigurationDummy = () => {
     recognition.onend = () => {
       console.log('Speech recognition ended')
       if (isCalling) {
-        recognition.start() // Restart recognition if the call is still active
+        recognition.start()
       } else {
         setIsListening(false)
         setIsLoading(true)
       }
     }
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       let finalTranscript = ''
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
@@ -193,7 +199,7 @@ const ConfigurationDummy = () => {
       setText(finalTranscript)
       console.log('Speech recognition result:', finalTranscript)
       if (finalTranscript) {
-        socket.current.emit('message', finalTranscript)
+        socket.current?.emit('message', finalTranscript)
       }
     }
 
@@ -203,7 +209,7 @@ const ConfigurationDummy = () => {
 
   const handleMute = () => {
     setIsMuted(!isMuted)
-    if (sourceNodeRef.current) {
+    if (sourceNodeRef.current && audioContextRef.current) {
       if (!isMuted) {
         sourceNodeRef.current.disconnect(audioContextRef.current.destination)
       } else {
@@ -211,6 +217,8 @@ const ConfigurationDummy = () => {
       }
     }
   }
+
+  console.log(open)
   const idx = useParams()
   const [id, setId] = useState('')
   const [name, setName] = useState('')
@@ -235,14 +243,14 @@ const ConfigurationDummy = () => {
   const [openCall, setOpenCall] = useState(false)
   const [assistant, setAssistant] = useState(null)
 
-  const chatRef = useRef()
-  const handleButtonClick = (contentId) => {
+  const chatRef = useRef<any>(null)
+  const handleButtonClick = (contentId: string) => {
     setActiveContent(contentId)
   }
-  const handleChange = (event) => {
+  const handleChange = (event: any) => {
     setSelectedModel(event.target.value)
   }
-  const handleOutsideClick = (e) => {
+  const handleOutsideClick = (e: any) => {
     if (chatRef.current && !chatRef.current.contains(e.target)) {
       setIsChatVisible(false)
     }
@@ -1252,7 +1260,10 @@ const ConfigurationDummy = () => {
           )}
 
           {activeContent === 'content4' && (
-            <FunctionConfiguration assistantId={idx.id} functions={functions} />
+            <FunctionConfiguration
+              assistantId={String(idx.id)}
+              functions={functions}
+            />
           )}
 
           {activeContent === 'content5' && (
